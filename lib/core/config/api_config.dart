@@ -1,16 +1,21 @@
 import 'package:flutter/foundation.dart';
 
-/// Базовый URL API.
-/// Для Android-эмулятора: 10.0.2.2 — это localhost хоста.
-/// Для Web и остальных: localhost.
+/// Режим: 'local' — локальная сеть (Wi‑Fi), 'remote' — удалённый сервер
+const _apiMode = 'local';
+
+/// Локальная сеть: IP вашего ПК (например 192.168.1.100)
+const String _apiHostLocal = '192.168.1.100';
+/// Удалённый сервер: IP или домен (например 123.45.67.89 или api.example.com)
+const String _apiHostRemote = '123.45.67.89';
+const int _apiPort = 3000;
+
 String get apiBaseUrl {
   if (kIsWeb) {
-  //  return 'http://localhost:3000';
-  //if (Platform.isAndroid) {
-  //return 'http://10.0.2.2:3000';  // localhost хоста
-
+    return 'http://localhost:$_apiPort';
   }
-  //return 'http://localhost:3000';
-  // Для Android-эмулятора раскомментируйте и замените:
-   return 'http://10.0.2.2:3000';
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    final host = _apiMode == 'remote' ? _apiHostRemote : _apiHostLocal;
+    return 'http://$host:$_apiPort';
+  }
+  return 'http://localhost:$_apiPort';
 }
