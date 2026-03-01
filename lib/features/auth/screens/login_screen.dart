@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/config/api_config.dart';
 import '../../../providers/auth_provider.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,12 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     _errorMessage = null;
     if (_formKey.currentState?.validate() ?? false) {
-      final ok = await context.read<AuthProvider>().login(
+      setState(() {});
+      final err = await context.read<AuthProvider>().login(
             _loginController.text.trim(),
             _passwordController.text,
           );
-      if (mounted && !ok) {
-        setState(() => _errorMessage = 'Неверный логин или пароль');
+      if (mounted && err != null) {
+        setState(() => _errorMessage = err);
       }
     }
   }
@@ -132,6 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Демо: admin/admin123, director/director123, ivanov/user123',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.outline,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Сервер: $apiBaseUrl',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.outline,
+                          fontSize: 11,
                         ),
                     textAlign: TextAlign.center,
                   ),

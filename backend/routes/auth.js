@@ -1,6 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('../db');
+const config = require('../config');
 
 const router = express.Router();
 
@@ -21,7 +23,7 @@ router.post('/login', (req, res) => {
   if (!bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ error: 'Неверный логин или пароль' });
   }
-  const token = Buffer.from(user.id, 'utf8').toString('base64');
+  const token = jwt.sign({ userId: user.id }, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });
   res.json({
     user: {
       id: user.id,

@@ -31,6 +31,10 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   String? _error;
 
   static const _priorities = ['Низкий', 'Средний', 'Высокий', 'Критический'];
+  static const _titleMaxLength = 200;
+  static const _descriptionMaxLength = 5000;
+  static const _maxPhotos = 10;
+  static const _maxPhotoSizeBytes = 5 * 1024 * 1024; // 5 MB
 
   @override
   void initState() {
@@ -63,13 +67,19 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   }
 
   Future<void> _pickPhotos() async {
+    if (_photoBytes.length >= _maxPhotos) {
+      return;
+    }
     final images = await _picker.pickMultiImage();
     if (images.isNotEmpty) {
       final bytesList = <Uint8List>[];
       for (final x in images) {
+        if (bytesList.length + _photoBytes.length >= _maxPhotos) break;
         try {
           final bytes = await x.readAsBytes();
-          if (bytes.isNotEmpty) bytesList.add(bytes);
+          if (bytes.isNotEmpty && bytes.length <= _maxPhotoSizeBytes) {
+            bytesList.add(bytes);
+          }
         } catch (_) {}
       }
       if (bytesList.isNotEmpty) {
@@ -135,12 +145,13 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 labelText: 'Заголовок',
                 hintText: 'Краткое описание проблемы',
                 prefixIcon: Icon(Icons.title),
+                counterText: '',
               ),
+              maxLength: _titleMaxLength,
               textCapitalization: TextCapitalization.sentences,
               validator: (v) {
-                if (v == null || v.trim().isEmpty) {
-                  return 'Введите заголовок';
-                }
+                if (v == null || v.trim().isEmpty) return 'Введите заголовок';
+                if (v.length > _titleMaxLength) return 'Не более $_titleMaxLength символов';
                 return null;
               },
             ),
@@ -152,13 +163,14 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                 hintText: 'Подробное описание заявки',
                 prefixIcon: Icon(Icons.description),
                 alignLabelWithHint: true,
+                counterText: '',
               ),
               maxLines: 5,
+              maxLength: _descriptionMaxLength,
               textCapitalization: TextCapitalization.sentences,
               validator: (v) {
-                if (v == null || v.trim().isEmpty) {
-                  return 'Введите описание';
-                }
+                if (v == null || v.trim().isEmpty) return 'Введите описание';
+                if (v.length > _descriptionMaxLength) return 'Не более $_descriptionMaxLength символов';
                 return null;
               },
             ),

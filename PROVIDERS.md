@@ -20,7 +20,7 @@
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `_currentUser` | AppUser? | Текущий пользователь |
-| `_token` | String? | JWT-токен для API |
+| `_token` | String? | JWT-токен для API (срок 24ч) |
 | `_usersForResponsible` | List\<AppUser\> | Пользователи для выбора ответственного |
 
 ### Геттеры
@@ -36,7 +36,7 @@
 
 | Метод | Описание |
 |-------|----------|
-| `login(login, password)` | POST /api/auth/login, сохраняет user и token, загружает usersForResponsible. Возвращает `Future<bool>`. |
+| `login(login, password)` | POST /api/auth/login, сохраняет user и token, загружает usersForResponsible. Возвращает `Future<String?>` — null при успехе, иначе текст ошибки. |
 | `logout()` | Очищает user, token, вызывает notifyListeners |
 | `setTokenForApi(token)` | Устанавливает токен в ApiService |
 | `getUserById(id)` | Ищет в currentUser и usersForResponsible |

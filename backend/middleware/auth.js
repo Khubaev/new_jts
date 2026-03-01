@@ -1,4 +1,6 @@
+const jwt = require('jsonwebtoken');
 const db = require('../db');
+const config = require('../config');
 
 function auth(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -7,7 +9,8 @@ function auth(req, res, next) {
   }
   const token = authHeader.slice(7);
   try {
-    const userId = Buffer.from(token, 'base64').toString('utf8');
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    const userId = decoded.userId;
     const user = db.prepare('SELECT u.*, r.code as role_code, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?').get(userId);
     if (!user) {
       return res.status(401).json({ error: 'Неверный токен' });
@@ -15,6 +18,9 @@ function auth(req, res, next) {
     req.user = user;
     next();
   } catch (e) {
+    if (e.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Токен истёк. Войдите снова.' });
+    }
     return res.status(401).json({ error: 'Неверный токен' });
   }
 }

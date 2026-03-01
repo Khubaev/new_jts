@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 /// Режим: 'local' — локальная сеть (Wi‑Fi), 'remote' — удалённый сервер
-const _apiMode = 'local';
+const _apiMode = 'remote';
 
 /// Локальная сеть: IP вашего ПК (например 192.168.1.100)
 const String _apiHostLocal = '192.168.1.100';

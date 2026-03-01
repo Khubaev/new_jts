@@ -44,7 +44,7 @@ my_new_project/
 - **PATCH /api/requests/:id/status** — body: `{ statusId }`
 - **GET /api/rooms**, **GET /api/statuses**, **GET /api/types**, **GET /api/users/for-responsible**
 
-Все запросы (кроме login): заголовок `Authorization: Bearer <token>`.
+Все запросы (кроме login): заголовок `Authorization: Bearer <token>`. Токен — JWT (срок 24ч).
 
 ## Права доступа
 

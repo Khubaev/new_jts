@@ -1,6 +1,7 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const { validateRequestCreate, validateRequestUpdate } = require('../middleware/validate');
 
 const router = express.Router();
 
@@ -125,13 +126,9 @@ router.get('/:id', (req, res) => {
   });
 });
 
-router.post('/', (req, res) => {
+router.post('/', validateRequestCreate, (req, res) => {
   const user = req.user;
   const { title, description, priority, roomId, responsibleUserId, requestTypeId, photoBytes } = req.body;
-
-  if (!title || !description) {
-    return res.status(400).json({ error: 'Заголовок и описание обязательны' });
-  }
 
   const statusNew = db.prepare("SELECT id FROM request_statuses WHERE code = 'new'").get();
   if (!statusNew) {
@@ -186,7 +183,7 @@ router.post('/', (req, res) => {
   });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', validateRequestUpdate, (req, res) => {
   const user = req.user;
   const request = db.prepare('SELECT * FROM requests WHERE id = ?').get(req.params.id);
   if (!request) {

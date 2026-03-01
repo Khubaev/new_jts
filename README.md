@@ -27,7 +27,9 @@ flutter run -d chrome   # или -d windows, -d emulator-5554
 | [FEATURES.md](FEATURES.md) | Структура features (auth, requests) |
 | [REQUESTS_SCREENS.md](REQUESTS_SCREENS.md) | Подробное описание экранов заявок |
 | [DEPLOY.md](DEPLOY.md) | Запуск backend на удалённом сервере |
+| [DEPLOY_TIMEWEB.md](DEPLOY_TIMEWEB.md) | Запуск на Timeweb Cloud (пошагово) |
 | [INSTALL_PHONE.md](INSTALL_PHONE.md) | Установка приложения на телефон |
+| [SECURITY.md](SECURITY.md) | Оценка безопасности и рекомендации |
 
 ## Структура
 

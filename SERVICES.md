@@ -67,14 +67,14 @@
 
 ### createRequest — параметры
 
-- Обязательные: `title`, `description`
-- Опциональные: `priority`, `roomId`, `responsibleUserId`, `requestTypeId`, `photoBytes`
+- Обязательные: `title` (≤200), `description` (≤5000)
+- Опциональные: `priority`, `roomId`, `responsibleUserId`, `requestTypeId`, `photoBytes` (≤10 шт., ≤5 MB, JPEG/PNG)
 - `requestorUserId` — не передаётся; backend берёт из токена (текущий пользователь)
-- `photoBytes` — `List<Uint8List>`, в JSON уходит как массив base64-строк
+- `photoBytes` — `List<Uint8List>`, в JSON как массив base64. Backend: ≤10 шт., ≤5 MB каждое, JPEG/PNG
 
 ### updateRequest — параметры
 
-Все опциональные: `title`, `description`, `priority`, `roomId`, `responsibleUserId`, `requestTypeId`, `photoBytes`.
+Все опциональные: `title`, `description`, `priority`, `roomId`, `responsibleUserId`, `requestTypeId`, `photoBytes`. Те же лимиты, что в createRequest.
 
 ### Маппинг API → модели
 
@@ -94,7 +94,8 @@
 ### Обработка ошибок
 
 - `_checkResponse(res, statusOk)` — при statusCode != ok выбрасывает ApiException
-- 401 → `ApiException('Требуется авторизация')`
+- 401 → `ApiException(body['error'] или 'Требуется авторизация')`
+- 429 (login) → `ApiException('Слишком много попыток. Подождите 15 минут.')`
 - Другие коды → `body['error']` или `'Ошибка сервера'`
 - `statusOk`: 200 по умолчанию, 201 для POST create, 204 для DELETE
 

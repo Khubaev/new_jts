@@ -35,8 +35,14 @@ mkdir -p ~/app/backend
 cd ~/app/backend
 npm install
 node scripts/init-db.js   # инициализация БД (один раз)
+
+# Production: задать JWT_SECRET (минимум 32 символа)
+export JWT_SECRET=ваш-случайный-секрет
+
 node server.js
 ```
+
+См. `backend/.env.example` для переменных окружения.
 
 Сервер слушает порт 3000. Для работы в фоне используйте **PM2**:
 

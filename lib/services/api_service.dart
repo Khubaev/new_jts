@@ -19,8 +19,13 @@ class ApiService {
       'password': password,
     });
     if (res.statusCode != 200) {
-      final body = jsonDecode(res.body);
-      throw ApiException(body['error'] ?? 'Ошибка авторизации');
+      try {
+        final body = jsonDecode(res.body) as Map<String, dynamic>?;
+        throw ApiException(body?['error'] ?? 'Ошибка авторизации');
+      } catch (e) {
+        if (e is ApiException) rethrow;
+        throw ApiException(res.statusCode == 429 ? 'Слишком много попыток. Подождите 15 минут.' : 'Ошибка авторизации');
+      }
     }
     final data = jsonDecode(res.body);
     final user = AppUser(

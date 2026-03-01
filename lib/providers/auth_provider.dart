@@ -19,17 +19,24 @@ class AuthProvider extends ChangeNotifier {
 
   final ApiService _api = ApiService();
 
-  Future<bool> login(String login, String password) async {
+  /// Возвращает null при успехе, иначе текст ошибки.
+  Future<String?> login(String login, String password) async {
     try {
       final result = await _api.login(login, password);
       _currentUser = result.user;
       _token = result.token;
       _api.setToken(_token);
-      await _loadUsersForResponsible();
+      try {
+        await _loadUsersForResponsible();
+      } catch (_) {
+        // Список ответственных не критичен — логин успешен
+      }
       notifyListeners();
-      return true;
-    } on ApiException {
-      return false;
+      return null;
+    } on ApiException catch (e) {
+      return e.message;
+    } catch (e, st) {
+      return e.toString();
     }
   }
 

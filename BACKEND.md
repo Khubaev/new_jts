@@ -6,10 +6,12 @@ Node.js + Express + SQLite. Порт по умолчанию: 3000.
 
 ```
 backend/
-├── server.js           # Точка входа, CORS, JSON limit 50mb
+├── server.js           # Точка входа, CORS, rate limit, JSON limit 12mb
+├── config.js           # JWT_SECRET, лимиты, валидация
 ├── db.js               # Подключение к SQLite (data/requests.db)
 ├── middleware/
-│   └── auth.js         # Bearer token → req.user
+│   ├── auth.js         # JWT → req.user
+│   └── validate.js     # Валидация заявок (title, description, фото)
 ├── routes/
 │   ├── index.js        # Агрегация маршрутов
 │   ├── auth.js         # POST /login
@@ -39,9 +41,27 @@ backend/
 ## Middleware auth
 
 - Читает `Authorization: Bearer <token>`
-- Токен = base64(userId)
-- Декодирует userId, загружает user из БД, кладёт в `req.user`
-- При ошибке → 401
+- Токен — JWT (подпись, срок 24ч)
+- Проверяет подпись, извлекает userId, загружает user из БД, кладёт в `req.user`
+- При ошибке → 401 («Неверный токен» или «Токен истёк. Войдите снова.»)
+
+## Middleware validate
+
+- `validateRequestCreate` — POST /api/requests: title≤200, description≤5000, roomId/requestTypeId/responsibleUserId в справочниках, фото JPEG/PNG≤5MB, ≤10 шт.
+- `validateRequestUpdate` — PUT /api/requests/:id: те же ограничения
+
+## Конфигурация (config.js, .env)
+
+| Переменная | По умолчанию | Описание |
+|------------|--------------|----------|
+| JWT_SECRET | change-me-in-production | Секрет для подписи JWT |
+| JWT_EXPIRES_IN | 24h | Срок действия токена |
+| BODY_LIMIT | 12mb | Лимит тела запроса |
+| CORS_ORIGINS | — | Список origins через запятую (если задан — ограничение CORS) |
+
+## Rate limiting
+
+- `/api/auth/login` — 5 попыток за 15 минут, при превышении → 429
 
 ## База данных
 
@@ -81,7 +101,11 @@ node scripts/init-db.js
 
 ```bash
 cd backend
+npm install
+node scripts/init-db.js   # один раз
 npm start
 ```
+
+**Production:** задайте `JWT_SECRET` в `.env` или переменных окружения (минимум 32 символа).
 
 См. также [API.md](API.md) для описания эндпоинтов.

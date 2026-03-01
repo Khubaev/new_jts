@@ -68,12 +68,12 @@
 **Инициализация:** `_loadData()` — `getRooms()`, `getRequestTypes()`.
 
 **Поля формы:**
-- `_titleController`, `_descriptionController` — текст
+- `_titleController`, `_descriptionController` — текст (title≤200, description≤5000)
 - `_selectedRoomId` — из API rooms
 - `_selectedResponsible` — из `auth.usersForResponsible`
 - `_selectedTypeId` — из API types
 - `_selectedPriority` — Низкий, Средний, Высокий, Критический
-- `_photoBytes` — `List<Uint8List>`, `image_picker.pickMultiImage()`
+- `_photoBytes` — `List<Uint8List>`, до 10 фото, каждое ≤5 MB, JPEG/PNG
 
 **Зависимости:**
 - `AuthProvider` — `currentUser`, `usersForResponsible`
@@ -92,7 +92,7 @@
 
 **Инициализация:** `_loadData()` — `getById` или `fetchRequest`, `getRooms()`, `getRequestTypes()`, заполнение формы.
 
-**Поля формы:** те же, что в create, плюс предзаполнение из заявки.
+**Поля формы:** те же, что в create (лимиты: title≤200, description≤5000, ≤10 фото по 5 MB), плюс предзаполнение из заявки.
 
 **Зависимости:**
 - `AuthProvider` — `usersForResponsible`
